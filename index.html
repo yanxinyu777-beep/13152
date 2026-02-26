@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>区域与产业调研报告生成系统（生产版）</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="card">
+        <h1>区域与产业调研报告生成系统</h1>
+        <p>仅聚焦：区域报告 + 产业报告。支持三重数据校验、脚注引用、图表、PDF 导出。</p>
+      </header>
+
+      <section class="card">
+        <h2>基础信息</h2>
+        <form id="reportForm">
+          <div class="grid-2">
+            <label>目标区域<input id="targetRegion" required placeholder="例如：苏州市工业园区" /></label>
+            <label>目标产业<input id="targetIndustry" required placeholder="例如：生物医药" /></label>
+          </div>
+          <div class="grid-2">
+            <label>区域重点关注<textarea id="regionFocus" rows="3" required></textarea></label>
+            <label>产业重点关注<textarea id="industryFocus" rows="3" required></textarea></label>
+          </div>
+
+          <h3>三年宏观数据（单位：亿元）</h3>
+          <table>
+            <thead>
+              <tr><th>年份</th><th>第一产业</th><th>第二产业</th><th>第三产业</th><th>高企数量(家)</th><th>瞪羚数量(家)</th></tr>
+            </thead>
+            <tbody id="macroBody"></tbody>
+          </table>
+
+          <h3>政策与领导信息（可缺省）</h3>
+          <div class="grid-2">
+            <label>政策摘要（每行一条）<textarea id="policies" rows="5" placeholder="招商政策A\n高企补贴政策B"></textarea></label>
+            <label>主要领导与讲话摘要（每行一条）<textarea id="leaders" rows="5" placeholder="领导甲：讲话要点"></textarea></label>
+          </div>
+
+          <h3>代表企业（每行：企业名|所属行业|主要产品|年产值(亿元)|分公司情况）</h3>
+          <textarea id="companies" rows="5" placeholder="示例企业|生物医药|抗体药物|85|上海/广州"></textarea>
+
+          <h3>三重校验项（每行：指标名|来源1值|来源2值|来源3值|来源1链接|来源2链接|来源3链接）</h3>
+          <textarea id="verification" rows="6" required placeholder="高企数量(2024)|5200|5210|5205|https://a|https://b|https://c"></textarea>
+
+          <h3>关键来源（每行一个链接或出处）</h3>
+          <textarea id="sources" rows="5" required placeholder="https://stats.gov.cn/...\nhttps://xx.gov.cn/..."></textarea>
+
+          <div class="actions">
+            <button id="collectBtn" type="button">自动采集官方数据</button>
+            <button id="verifyBtn" type="button">自动核验来源真实性</button>
+          </div>
+          <button id="startBtn" type="submit">生成报告</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>自动采集与核验结果</h2>
+        <div id="collectStatus" class="muted">等待采集...</div>
+        <div id="collectList" class="preview">暂无采集结果</div>
+        <div id="verifyStatus" class="muted">等待核验...</div>
+        <div id="verifyList" class="preview">暂无核验结果</div>
+      </section>
+
+      <section class="card">
+        <h2>处理进度</h2>
+        <ul id="progressList" class="progress-list">
+          <li>要求分析中 <span>3S</span></li>
+          <li>信息收集中 <span>2-3min</span></li>
+          <li>信息处理中 <span>1-2min</span></li>
+          <li>报告撰写中 <span>1-2min</span></li>
+          <li>整理输出中 <span>直至结束</span></li>
+        </ul>
+        <div id="progressStatus">等待开始...</div>
+      </section>
+
+      <section class="card">
+        <h2>输出</h2>
+        <div class="actions">
+          <button id="downloadRegionBtn" disabled>下载区域调研报告 PDF</button>
+          <button id="downloadIndustryBtn" disabled>下载产业调研报告 PDF</button>
+        </div>
+        <div class="charts">
+          <canvas id="gdpChart"></canvas>
+          <canvas id="enterpriseChart"></canvas>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>区域报告预览</h2>
+        <article id="regionPreview" class="preview">尚未生成</article>
+      </section>
+
+      <section class="card">
+        <h2>产业报告预览</h2>
+        <article id="industryPreview" class="preview">尚未生成</article>
+      </section>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+:root {
+  --bg: #f3f6fb;
+  --card: #fff;
+  --primary: #2058ff;
+  --text: #1d2742;
+  --muted: #677189;
+  --ok: #198754;
+  --warn: #d97706;
+  --border: #dbe2f1;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+.container { max-width: 1200px; margin: auto; padding: 18px; }
+.card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 14px rgba(0,0,0,.06); padding: 16px; margin-bottom: 14px; }
+h1,h2,h3 { margin-top: 0; }
+label { display: block; font-weight: 600; }
+input, textarea, button { width: 100%; margin-top: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font: inherit; }
+button { border: none; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; }
+button:disabled { background: #b7c5ea; cursor: not-allowed; }
+.grid-2 { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.actions { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+
+.progress-list { margin: 0; padding-left: 18px; }
+.progress-list li { color: var(--muted); margin-bottom: 8px; }
+.progress-list li.active { color: var(--primary); font-weight: 700; }
+.progress-list li.done { color: var(--ok); }
+#progressStatus { font-weight: 700; margin-top: 8px; }
+
+.preview { white-space: pre-wrap; line-height: 1.7; border: 1px dashed #c7d2ef; border-radius: 10px; padding: 12px; min-height: 150px; }
+.preview .num { color: #d11a1a; font-weight: 700; }
+.preview .hl { text-decoration: underline wavy #e11d48; font-weight: 700; }
+.preview .footnote { color: var(--muted); font-size: 13px; }
+
+table { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+th { background: #f8faff; }
+
+.charts { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+canvas { border: 1px solid var(--border); border-radius: 8px; min-height: 260px; background: #fff; }
+.bad { color: var(--warn); font-weight: 700; }
+.good { color: var(--ok); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .grid-2, .actions, .charts { grid-template-columns: 1fr; }
+}
+
+.muted { color: var(--muted); font-weight: 600; margin-bottom: 8px; }
