@@ -1,63 +1,42 @@
 :root {
-  --bg: #f4f7fb;
+  --bg: #f5f7fb;
   --card: #ffffff;
-  --primary: #1f5eff;
-  --text: #17233d;
-  --muted: #6b7485;
-  --danger: #c52828;
-  --success: #218838;
+  --primary: #245bff;
+  --text: #1c2640;
+  --muted: #6f7890;
+  --danger: #d93030;
+  --success: #1c8a43;
+  --border: #dde3f1;
 }
 
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   margin: 0;
-  background: var(--bg);
   font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
   color: var(--text);
 }
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px;
-}
-
-header {
-  margin-bottom: 16px;
-}
-
-header h1 {
-  margin-bottom: 8px;
-}
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+header { margin-bottom: 14px; }
+header h1 { margin: 0 0 6px 0; }
 
 .card {
   background: var(--card);
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(23, 35, 61, 0.08);
-  padding: 18px;
-  margin-bottom: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(28, 38, 64, 0.08);
 }
 
-label {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-input,
-textarea,
-button {
+label { display: block; font-weight: 600; margin-bottom: 10px; }
+input, textarea, button {
   width: 100%;
-  margin-top: 6px;
-  border: 1px solid #d7dce8;
+  border: 1px solid var(--border);
   border-radius: 8px;
+  margin-top: 6px;
   padding: 10px;
   font: inherit;
 }
-
 button {
   background: var(--primary);
   border: none;
@@ -65,71 +44,59 @@ button {
   font-weight: 700;
   cursor: pointer;
 }
+button.secondary { background: #3f7bfa; margin-bottom: 12px; }
+button.danger { background: var(--danger); }
+button:disabled { background: #b6c3ea; cursor: not-allowed; }
 
-button:disabled {
-  background: #b8c5ef;
-  cursor: not-allowed;
-}
+.grid-2, .grid-3 { display: grid; gap: 12px; }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
-.output-actions {
+.progress-list { margin: 0 0 10px 0; padding-left: 16px; }
+.progress-list li { color: var(--muted); margin-bottom: 8px; }
+.progress-list li.active { color: var(--primary); font-weight: 700; }
+.progress-list li.done { color: var(--success); }
+.time { font-size: 12px; color: #8f98ac; }
+.status { font-weight: 700; }
+
+.output-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tip { color: var(--muted); }
+
+.evidence-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
   display: grid;
+  gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
 }
 
-.progress-list {
-  margin: 0 0 12px 0;
-  padding-left: 16px;
+.preview {
+  border: 1px dashed #c7d2f0;
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 120px;
+  line-height: 1.8;
+  white-space: pre-wrap;
 }
+.preview .red { color: #d31818; font-weight: 700; }
+.preview .highlight { text-decoration: underline wavy #e02424; font-weight: 700; }
 
-.progress-list li {
-  margin-bottom: 8px;
-  color: var(--muted);
-}
-
-.progress-list li.active {
-  color: var(--primary);
-  font-weight: 700;
-}
-
-.progress-list li.done {
-  color: var(--success);
-}
-
-.time {
-  color: #8e98aa;
-  font-size: 12px;
-}
-
-.status {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.manage-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.tip {
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-#caseList {
+.charts {
   margin-top: 12px;
-  padding-left: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+canvas {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  min-height: 280px;
 }
 
-#caseList li {
-  color: var(--danger);
-  font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .output-actions,
-  .manage-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .output-actions, .charts, .evidence-item { grid-template-columns: 1fr; }
 }
