@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>区域与产业调研报告生成系统</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>区域与支柱产业调研报告生成系统</h1>
+        <p>输入目标区域与重点关注内容，自动生成专业调研报告（PDF）。</p>
+      </header>
+
+      <main>
+        <section class="card">
+          <h2>一、内容输入</h2>
+          <form id="reportForm">
+            <label>
+              目标区域
+              <input id="targetRegion" type="text" placeholder="例如：深圳市南山区" required />
+            </label>
+
+            <label>
+              区域调研重点关注内容
+              <textarea id="regionFocus" rows="4" placeholder="例如：科技招商政策、高新企业补贴、园区孵化器" required></textarea>
+            </label>
+
+            <label>
+              行业调研重点关注内容
+              <textarea id="industryFocus" rows="4" placeholder="例如：人工智能产业链、龙头企业、上下游协同" required></textarea>
+            </label>
+
+            <button type="submit" id="startBtn">开始生成</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>二、等待显示</h2>
+          <ul id="progressList" class="progress-list">
+            <li>要求分析中 <span class="time">3S</span></li>
+            <li>信息收集中 <span class="time">2-3min</span></li>
+            <li>信息处理中 <span class="time">1-2min</span></li>
+            <li>报告撰写中 <span class="time">1-2min</span></li>
+            <li>整理输出中 <span class="time">直至结束</span></li>
+          </ul>
+          <div id="progressStatus" class="status">等待开始...</div>
+        </section>
+
+        <section class="card">
+          <h2>三、内容输出</h2>
+          <div class="output-actions">
+            <button id="downloadRegionBtn" disabled>下载区域调研报告</button>
+            <button id="downloadIndustryBtn" disabled>下载产业调研报告</button>
+          </div>
+          <p class="tip">报告输出格式：PDF；命名格式：XX区域调研报告 / XX产业调研报告</p>
+        </section>
+
+        <section class="card">
+          <h2>管理功能</h2>
+          <div class="manage-grid">
+            <div>
+              <h3>调研报告模板上传</h3>
+              <input type="file" id="templateUpload" accept=".doc,.docx,.pdf" />
+              <p id="templateInfo" class="tip">尚未上传模板</p>
+            </div>
+            <div>
+              <h3>业绩案例更新</h3>
+              <textarea id="caseInput" rows="4" placeholder="输入案例后点击添加"></textarea>
+              <button id="addCaseBtn">添加案例</button>
+              <ul id="caseList"></ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --primary: #1f5eff;
+  --text: #17233d;
+  --muted: #6b7485;
+  --danger: #c52828;
+  --success: #218838;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--text);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header {
+  margin-bottom: 16px;
+}
+
+header h1 {
+  margin-bottom: 8px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(23, 35, 61, 0.08);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+input,
+textarea,
+button {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #d7dce8;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
+
+button {
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #b8c5ef;
+  cursor: not-allowed;
+}
+
+.output-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.progress-list {
+  margin: 0 0 12px 0;
+  padding-left: 16px;
+}
+
+.progress-list li {
+  margin-bottom: 8px;
+  color: var(--muted);
+}
+
+.progress-list li.active {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.progress-list li.done {
+  color: var(--success);
+}
+
+.time {
+  color: #8e98aa;
+  font-size: 12px;
+}
+
+.status {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.manage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tip {
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+#caseList {
+  margin-top: 12px;
+  padding-left: 16px;
+}
+
+#caseList li {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .output-actions,
+  .manage-grid {
+    grid-template-columns: 1fr;
+  }
+}
