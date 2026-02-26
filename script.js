@@ -14,6 +14,8 @@ const verifyStatus = document.getElementById("verifyStatus");
 const collectList = document.getElementById("collectList");
 const verifyList = document.getElementById("verifyList");
 const sourcesInput = document.getElementById("sources");
+const collectProgressFill = document.getElementById("collectProgressFill");
+const collectProgressLabel = document.getElementById("collectProgressLabel");
 
 const steps = ["要求分析中", "信息收集中", "信息处理中", "报告撰写中", "整理输出中"];
 const years = [2022, 2023, 2024];
@@ -59,6 +61,23 @@ async function runProgress() {
   progressStatus.textContent = "报告已生成，可预览和下载。";
 }
 
+
+function setCollectProgress(percent, message = "") {
+  const safe = Math.max(0, Math.min(100, percent));
+  collectProgressFill.style.width = `${safe}%`;
+  collectProgressLabel.textContent = message || `采集进度：${safe}%`;
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    return response;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 function parseLines(text) {
   return text
     .split("\n")
@@ -300,25 +319,43 @@ async function collectOfficialData() {
     collectStatus.textContent = "请先填写目标区域和目标产业。";
     return;
   }
+
   collectBtn.disabled = true;
+  setCollectProgress(5, "采集进度：5%（初始化）");
   collectStatus.textContent = "正在自动采集官方数据...";
 
-  const response = await fetch(`/api/collect-official-data?region=${encodeURIComponent(region)}&industry=${encodeURIComponent(industry)}`);
-  const data = await response.json();
-  collectedItems = data.items || [];
+  try {
+    setCollectProgress(25, "采集进度：25%（请求官方检索源）");
+    const response = await fetchWithTimeout(`/api/collect-official-data?region=${encodeURIComponent(region)}&industry=${encodeURIComponent(industry)}`, {}, 12000);
 
-  if (collectedItems.length === 0) {
-    collectStatus.textContent = "未采集到可用官方数据（可稍后重试）。";
-    collectList.textContent = "暂无采集结果";
-  } else {
-    collectStatus.textContent = `采集完成，共 ${collectedItems.length} 条官方数据候选。`;
-    collectList.innerHTML = collectedItems.map((item, idx) => `${idx + 1}. ${item.title}\n${item.url}`).join("\n\n");
+    setCollectProgress(70, "采集进度：70%（解析结果）");
+    const data = await response.json();
+    collectedItems = data.items || [];
 
-    const existing = new Set(parseLines(sourcesInput.value));
-    collectedItems.forEach((item) => existing.add(item.url));
-    sourcesInput.value = [...existing].join("\n");
+    if (collectedItems.length === 0) {
+      collectStatus.textContent = "未采集到可用官方数据（可稍后重试）。";
+      collectList.textContent = "暂无采集结果";
+    } else {
+      const endpointInfo = (data.endpoints || [])
+        .map((x) => `${x.ok ? '✓' : '×'} ${x.endpoint}（${x.count}条）`)
+        .join("\\n");
+
+      collectStatus.textContent = `采集完成，共 ${collectedItems.length} 条官方数据候选。`;
+      collectList.innerHTML = `${collectedItems.map((item, idx) => `${idx + 1}. ${item.title}\\n${item.url}`).join("\\n\\n")}\\n\\n检索源状态：\\n${endpointInfo}`;
+
+      const existing = new Set(parseLines(sourcesInput.value));
+      collectedItems.forEach((item) => existing.add(item.url));
+      sourcesInput.value = [...existing].join("\\n");
+    }
+
+    setCollectProgress(100, "采集进度：100%（完成）");
+  } catch (error) {
+    collectStatus.textContent = "采集超时或网络异常，请重试。";
+    collectList.textContent = `错误：${error?.name || 'UnknownError'}`;
+    setCollectProgress(100, "采集进度：100%（异常结束）");
+  } finally {
+    collectBtn.disabled = false;
   }
-  collectBtn.disabled = false;
 }
 
 async function verifySourcesOnline() {

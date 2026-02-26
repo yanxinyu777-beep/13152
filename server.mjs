@@ -67,12 +67,12 @@ async function readBody(req) {
   }
 }
 
-async function fetchTextWithRetry(targetUrl, retry = 2) {
+async function fetchTextWithRetry(targetUrl, retry = 1, timeoutMs = 3000) {
   let lastError = null;
   for (let i = 0; i <= retry; i += 1) {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 8000);
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
       const response = await fetch(targetUrl, {
         signal: controller.signal,
         headers: {
@@ -105,23 +105,24 @@ function extractCandidatesFromHtml(html) {
 
 async function collectOfficialData(region, industry) {
   const query = encodeURIComponent(`${region} ${industry} 招商 产业 政策 政府工作报告`);
-  const collected = [];
 
-  for (const endpoint of OFFICIAL_SEARCH_ENDPOINTS) {
+  const endpointTasks = OFFICIAL_SEARCH_ENDPOINTS.map(async (endpoint) => {
     try {
-      const { ok, text } = await fetchTextWithRetry(`${endpoint}${query}`);
-      if (!ok) continue;
-      const candidates = extractCandidatesFromHtml(text)
+      const { ok, text } = await fetchTextWithRetry(`${endpoint}${query}`, 1, 2500);
+      if (!ok) return { endpoint, ok: false, items: [] };
+      const items = extractCandidatesFromHtml(text)
         .map((v) => ({ ...v, domain: normalizeDomain(v.href) }))
-        .filter((v) => isOfficialDomain(v.domain));
-
-      for (const item of candidates.slice(0, 8)) {
-        collected.push({ title: item.title, url: item.href, domain: item.domain, source: endpoint });
-      }
+        .filter((v) => isOfficialDomain(v.domain))
+        .slice(0, 8)
+        .map((v) => ({ title: v.title, url: v.href, domain: v.domain, source: endpoint }));
+      return { endpoint, ok: true, items };
     } catch {
-      // ignore endpoint errors
+      return { endpoint, ok: false, items: [] };
     }
-  }
+  });
+
+  const settled = await Promise.all(endpointTasks);
+  const collected = settled.flatMap((v) => v.items);
 
   if (collected.length === 0) {
     DIRECT_OFFICIAL_PORTALS.forEach((item) => {
@@ -137,7 +138,11 @@ async function collectOfficialData(region, industry) {
       unique.push(item);
     }
   });
-  return unique.slice(0, 20);
+
+  return {
+    items: unique.slice(0, 20),
+    endpoints: settled.map((x) => ({ endpoint: x.endpoint, ok: x.ok, count: x.items.length }))
+  };
 }
 
 function valueMatchConfidence(text, expectedValues = []) {
@@ -214,8 +219,8 @@ const server = http.createServer(async (req, res) => {
     const region = parsed.searchParams.get("region") || "";
     const industry = parsed.searchParams.get("industry") || "";
     if (!region || !industry) return sendJson(res, 400, { error: "region 和 industry 必填" });
-    const items = await collectOfficialData(region, industry);
-    return sendJson(res, 200, { count: items.length, items });
+    const result = await collectOfficialData(region, industry);
+    return sendJson(res, 200, { count: result.items.length, items: result.items, endpoints: result.endpoints });
   }
 
   if (parsed.pathname === "/api/verify-sources" && req.method === "POST") {
