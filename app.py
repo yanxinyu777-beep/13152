@@ -117,7 +117,7 @@ class RoleAnalyzer:
             if quotes:
                 utterances.extend(Utterance("角色", q.strip()) for q in quotes if q.strip())
             else:
-                utterances.append(Utterance(current_speaker, line))
+                utterances.append(Utterance("旁白", line))
 
         return utterances
 
@@ -138,14 +138,16 @@ class Chunker:
         current_seconds = 0
 
         for utt in utterances:
-            if current and current_seconds + utt.est_seconds > MAX_SECONDS:
-                chunks.append(current)
-                overlap = Chunker._tail_overlap(current, OVERLAP_SECONDS)
-                current = overlap
-                current_seconds = sum(u.est_seconds for u in current)
+            for split_utt in Chunker._split_utterance(utt, MAX_SECONDS):
+                if current and current_seconds + split_utt.est_seconds > MAX_SECONDS:
+                    chunks.append(current)
+                    overlap_budget = min(OVERLAP_SECONDS, max(0, MAX_SECONDS - split_utt.est_seconds))
+                    overlap = Chunker._tail_overlap(current, overlap_budget) if overlap_budget > 0 else []
+                    current = overlap
+                    current_seconds = sum(u.est_seconds for u in current)
 
-            current.append(utt)
-            current_seconds += utt.est_seconds
+                current.append(split_utt)
+                current_seconds += split_utt.est_seconds
 
         if current:
             chunks.append(current)
@@ -154,15 +156,38 @@ class Chunker:
 
     @staticmethod
     def _tail_overlap(chunk: List[Utterance], overlap_seconds: int) -> List[Utterance]:
+        if overlap_seconds <= 0:
+            return []
+
         overlap: List[Utterance] = []
         total = 0
         for utt in reversed(chunk):
+            utt_seconds = utt.est_seconds
+            if total + utt_seconds > overlap_seconds:
+                if not overlap:
+                    break
+                continue
             overlap.append(utt)
-            total += utt.est_seconds
+            total += utt_seconds
             if total >= overlap_seconds:
                 break
         overlap.reverse()
         return overlap
+
+    @staticmethod
+    def _split_utterance(utterance: Utterance, max_seconds: int) -> List[Utterance]:
+        max_chars = max(1, max_seconds * CHARS_PER_SECOND)
+        if len(utterance.text) <= max_chars:
+            return [utterance]
+
+        pieces: List[Utterance] = []
+        text = utterance.text
+        for start in range(0, len(text), max_chars):
+            piece_text = text[start : start + max_chars].strip()
+            if piece_text:
+                pieces.append(Utterance(utterance.speaker, piece_text))
+
+        return pieces or [Utterance(utterance.speaker, utterance.text[:max_chars])]
 
 
 class XFWebsocketTTS:
