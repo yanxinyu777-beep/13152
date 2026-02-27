@@ -1,0 +1,39 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f7fb;
+  margin: 0;
+}
+.container {
+  max-width: 760px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(20,20,20,.08);
+  padding: 26px;
+}
+input, button { font-size: 16px; }
+button {
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+.card {
+  margin-top: 16px;
+  background: #f3f5ff;
+  border-radius: 10px;
+  padding: 14px;
+}
+.hidden { display: none; }
+.download {
+  display: inline-block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #1f2937;
+  background: #dbeafe;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
